@@ -27,6 +27,7 @@ import org.wso2.ballerinalang.compiler.semantics.model.types.BInvokableType;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BIterableTypeVisitor;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BJSONType;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BMapType;
+import org.wso2.ballerinalang.compiler.semantics.model.types.BTableType;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BTupleCollectionType;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BXMLType;
@@ -272,6 +273,18 @@ public class IterableAnalyzer {
                 return Lists.of(type.eType);
             } else if (op.arity == 2) {
                 return Lists.of(symTable.intType, type.eType);
+            }
+            logTooMayVariablesError(op);
+            return Lists.of(symTable.errType);
+        }
+
+        @Override
+        public List<BType> visit(BTableType type, Operation op) {
+            if (op.arity == 0) {
+                logNotEnoughVariablesError(op, 1);
+                return Lists.of(symTable.errType);
+            } else if (op.arity == 1) {
+                return Lists.of(type.getConstraint());
             }
             logTooMayVariablesError(op);
             return Lists.of(symTable.errType);
