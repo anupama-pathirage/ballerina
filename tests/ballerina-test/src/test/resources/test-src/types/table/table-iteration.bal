@@ -41,3 +41,35 @@ function testForEachIterationWithPrimitives () (int i, int l, float f, float d, 
     testDB.close();
     return;
 }
+
+
+function testCountOperation () (int count) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<ResultPrimitive> dt = testDB.select("SELECT int_type, long_type, float_type, double_type,
+              boolean_type, string_type from DataTable where row_id < 3", null, typeof ResultPrimitive);
+    count = dt.count();
+    //count = dt.count();
+    //println("Count:" + count); //TODO: Checke why count twice works, and whether we need to load data into memory
+    testDB.close();
+    return;
+}
+
+
+function testFilterOperation () (int count) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<ResultPrimitive> dt = testDB.select("SELECT int_type, string_type from DataTable where row_id < 3", null, typeof ResultPrimitive);
+    table<ResultPrimitive> dt2 = dt.filter(filterRow);
+    count = dt2.count();
+    println("Count:" + count);
+    testDB.close();
+    return;
+}
+function filterRow(ResultPrimitive p) (boolean){
+    return p.INT_TYPE >=  0;
+}

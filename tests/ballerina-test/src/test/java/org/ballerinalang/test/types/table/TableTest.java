@@ -573,7 +573,7 @@ public class TableTest {
         Assert.assertEquals(((BInteger) returns[1]).intValue(), 200);
     }
 
-    @Test(groups = "TableTest", description = "Check retrieving data using foreach with multiple rows")
+    @Test(groups = "TableTest", description = "Check accessing data using foreach iteration")
     public void testForEachIterationWithPrimitives() {
         BValue[] returns = BRunUtil.invoke(resulIterable, "testForEachIterationWithPrimitives");
         Assert.assertEquals(returns.length, 6);
@@ -583,6 +583,20 @@ public class TableTest {
         Assert.assertEquals(((BFloat) returns[3]).floatValue(), 2139095039D);
         Assert.assertEquals(((BBoolean) returns[4]).booleanValue(), true);
         Assert.assertEquals(returns[5].stringValue(), "Hello");
+    }
+
+    @Test(groups = "TableTest", description = "Check count operation on table")
+    public void testCountOperation() {
+        BValue[] returns = BRunUtil.invoke(resulIterable, "testCountOperation");
+        Assert.assertEquals(returns.length, 1);
+        Assert.assertEquals(((BInteger) returns[0]).intValue(), 2);
+    }
+
+    @Test(groups = "TableTest", description = "Check count operation on table")
+    public void testFilterOperation() {
+        BValue[] returns = BRunUtil.invoke(resulIterable, "testFilterOperation");
+        //Assert.assertEquals(returns.length, 1);
+        //Assert.assertEquals(((BInteger) returns[0]).intValue(), 2);
     }
 
     @AfterSuite

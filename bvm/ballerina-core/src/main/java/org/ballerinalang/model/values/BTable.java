@@ -20,8 +20,10 @@ package org.ballerinalang.model.values;
 import org.ballerinalang.model.ColumnDefinition;
 import org.ballerinalang.model.DataIterator;
 import org.ballerinalang.model.types.BStructType;
+import org.ballerinalang.model.types.BTableType;
 import org.ballerinalang.model.types.BType;
 import org.ballerinalang.model.types.BTypes;
+import org.ballerinalang.util.TableProvider;
 
 import java.util.List;
 
@@ -35,11 +37,24 @@ public class BTable implements BRefType<Object>, BCollection {
     private DataIterator iterator;
     private boolean hasNextVal;
     private boolean nextPrefetched;
+    private TableProvider tableProvider;
+    private String tableName;
+
+    public BTable() {
+
+    }
 
     public BTable(DataIterator dataIterator) {
         this.iterator = dataIterator;
         this.nextPrefetched = false;
         this.hasNextVal = false;
+    }
+
+    public BTable(BType type) {
+        this.tableProvider = TableProvider.getInstance();
+        this.tableName = tableProvider.createTable(type);
+        this.iterator = tableProvider
+                .createIterator(this.tableName, (BStructType) ((BTableType) type).getConstrainedType());
     }
 
     @Override
