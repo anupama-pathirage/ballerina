@@ -314,7 +314,6 @@ public class IterableCodeDesugar {
     private void generateResultVariable(BLangBlockStmt blockStmt, IterableContext ctx, BLangVariable varResult) {
         final IterableKind kind = ctx.getLastOperation().kind;
         if (ctx.resultType.tag != TypeTags.ARRAY
-                && ctx.resultType.tag != TypeTags.TABLE
                 && ctx.resultType.tag != TypeTags.MAP
                 && kind != IterableKind.MAX
                 && kind != IterableKind.MIN) {
@@ -332,7 +331,6 @@ public class IterableCodeDesugar {
                 assignment.expr = arrayInit;
                 break;
             case TypeTags.MAP:
-            case TypeTags.TABLE:
                 final BLangRecordLiteral record = (BLangRecordLiteral) TreeBuilder.createRecordLiteralNode();
                 record.pos = pos;
                 record.type = ctx.resultType;

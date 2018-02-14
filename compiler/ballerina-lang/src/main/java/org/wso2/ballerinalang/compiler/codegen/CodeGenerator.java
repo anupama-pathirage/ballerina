@@ -93,7 +93,6 @@ import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLang
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangRecordKey;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangRecordKeyValue;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangStructLiteral;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangRecordLiteral.BLangTableLiteral;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef.BLangFieldVarRef;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef.BLangFunctionVarRef;
@@ -719,13 +718,6 @@ public class CodeGenerator extends BLangNodeVisitor {
             int opcode = getOpcode(key.fieldSymbol.type.tag, InstructionCodes.IFIELDSTORE);
             emit(opcode, structRegIndex, fieldIndex, keyValue.valueExpr.regIndex);
         }
-    }
-
-    @Override
-    public void visit(BLangTableLiteral tableLiteral) {
-        tableLiteral.regIndex = calcAndGetExprRegIndex(tableLiteral);
-        Operand typeCPIndex = getTypeCPIndex(tableLiteral.type);
-        emit(InstructionCodes.NEWTABLE, tableLiteral.regIndex, typeCPIndex);
     }
 
     @Override
