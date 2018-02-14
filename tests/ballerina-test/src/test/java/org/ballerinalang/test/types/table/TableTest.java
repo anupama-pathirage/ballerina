@@ -50,6 +50,7 @@ import java.util.Calendar;
 public class TableTest {
 
     CompileResult result;
+    CompileResult resulIterable;
     private static final String DB_NAME = "TEST_DATA_TABLE_DB";
 
     @BeforeClass
