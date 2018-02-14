@@ -56,7 +56,6 @@ public class TableTest {
     @BeforeClass
     public void setup() {
         result = BCompileUtil.compile("test-src/types/table/table-type.bal");
-        resulIterable = BCompileUtil.compile("test-src/types/table/table-iteration.bal");
         SQLDBUtils.deleteFiles(new File(SQLDBUtils.DB_DIRECTORY), DB_NAME);
         SQLDBUtils.initDatabase(SQLDBUtils.DB_DIRECTORY, DB_NAME, "datafiles/sql/DataTableDataFile.sql");
     }
@@ -571,32 +570,6 @@ public class TableTest {
         BValue[] returns = BRunUtil.invoke(result, "testMutltipleRowsWithForEach");
         Assert.assertEquals(((BInteger) returns[0]).intValue(), 100);
         Assert.assertEquals(((BInteger) returns[1]).intValue(), 200);
-    }
-
-    @Test(groups = "TableTest", description = "Check accessing data using foreach iteration")
-    public void testForEachIterationWithPrimitives() {
-        BValue[] returns = BRunUtil.invoke(resulIterable, "testForEachIterationWithPrimitives");
-        Assert.assertEquals(returns.length, 6);
-        Assert.assertEquals(((BInteger) returns[0]).intValue(), 1);
-        Assert.assertEquals(((BInteger) returns[1]).intValue(), 9223372036854774807L);
-        Assert.assertEquals(((BFloat) returns[2]).floatValue(), 123.34D);
-        Assert.assertEquals(((BFloat) returns[3]).floatValue(), 2139095039D);
-        Assert.assertEquals(((BBoolean) returns[4]).booleanValue(), true);
-        Assert.assertEquals(returns[5].stringValue(), "Hello");
-    }
-
-    @Test(groups = "TableTest", description = "Check count operation on table")
-    public void testCountOperation() {
-        BValue[] returns = BRunUtil.invoke(resulIterable, "testCountOperation");
-        Assert.assertEquals(returns.length, 1);
-        Assert.assertEquals(((BInteger) returns[0]).intValue(), 2);
-    }
-
-    @Test(groups = "TableTest", description = "Check count operation on table")
-    public void testFilterOperation() {
-        BValue[] returns = BRunUtil.invoke(resulIterable, "testFilterOperation");
-        //Assert.assertEquals(returns.length, 1);
-        //Assert.assertEquals(((BInteger) returns[0]).intValue(), 2);
     }
 
     @AfterSuite

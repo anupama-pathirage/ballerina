@@ -1,75 +1,219 @@
 import ballerina.data.sql;
 
-struct ResultPrimitive {
-    int INT_TYPE;
-    int LONG_TYPE;
-    float FLOAT_TYPE;
-    float DOUBLE_TYPE;
-    boolean BOOLEAN_TYPE;
-    string STRING_TYPE;
+struct Person {
+    int id;
+    int age;
+    float salary;
+    string name;
 }
 
-int iValue = -1;
-int lValue = -1;
-float fValue = -1;
-float dValue = -1;
-boolean bValue = false;
-string sValue = "";
+struct ResultCount {
+    int COUNTVAL;
+}
 
-function testForEachIterationWithPrimitives () (int i, int l, float f, float d, boolean b, string s) {
+int idValue = -1;
+int ageValue = -1;
+float salValue = -1;
+string nameValue = "";
+
+function testForEachInTableWithStmt () (int id, int age, float salary, string name) {
     endpoint<sql:ClientConnector> testDB {
         create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
-                                   0, "TEST_DATA_TABLE_DB", "SA", "", {maximumPoolSize:1});
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
     }
-    table<ResultPrimitive> dt = testDB.select("SELECT int_type, long_type, float_type, double_type,
-              boolean_type, string_type from DataTable where row_id = 1", null, typeof ResultPrimitive);
-    dt.foreach (function (ResultPrimitive p) {
-                                                iValue = p.INT_TYPE;
-                                                lValue = p.LONG_TYPE;
-                                                fValue = p.FLOAT_TYPE;
-                                                dValue = p.DOUBLE_TYPE;
-                                                bValue = p.BOOLEAN_TYPE;
-                                                sValue = p.STRING_TYPE;
-                                             }
-               );
-    i = iValue;
-    l = lValue;
-    f = fValue;
-    d = dValue;
-    b = bValue;
-    s = sValue;
+    table<Person> dt = testDB.select("SELECT * from Person where id = 1", null, typeof Person);
+    foreach x in dt {
+        id = x.id;
+        age = x.age;
+        salary = x.salary;
+        name = x.name;
+    }
     testDB.close();
     return;
 }
 
 
-function testCountOperation () (int count) {
+function testForEachInTable () (int id, int age, float salary, string name) {
     endpoint<sql:ClientConnector> testDB {
         create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
-                                   0, "TEST_DATA_TABLE_DB", "SA", "", {maximumPoolSize:1});
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
     }
-    table<ResultPrimitive> dt = testDB.select("SELECT int_type, long_type, float_type, double_type,
-              boolean_type, string_type from DataTable where row_id < 3", null, typeof ResultPrimitive);
+    table<Person> dt = testDB.select("SELECT * from Person where id = 1", null, typeof Person);
+    dt.foreach (function (Person p) {
+                    idValue = p.id;
+                    ageValue = p.age;
+                    salValue = p.salary;
+                    nameValue = p.name;
+                }
+       );
+    id = idValue;
+    age = ageValue;
+    salary = salValue;
+    name = nameValue;
+    testDB.close();
+    return;
+}
+
+
+function testCountInTable () (int count) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person where id < 10", null, typeof Person);
     count = dt.count();
-    //count = dt.count();
-    //println("Count:" + count); //TODO: Checke why count twice works, and whether we need to load data into memory
     testDB.close();
     return;
 }
 
-
-function testFilterOperation () (int count) {
+function testFilterTable () (int count, int id1, int id2) {
     endpoint<sql:ClientConnector> testDB {
         create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
-                                   0, "TEST_DATA_TABLE_DB", "SA", "", {maximumPoolSize:1});
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
     }
-    table<ResultPrimitive> dt = testDB.select("SELECT int_type, string_type from DataTable where row_id < 3", null, typeof ResultPrimitive);
-    table<ResultPrimitive> dt2 = dt.filter(filterRow);
-    count = dt2.count();
-    println("Count:" + count);
+    table<Person> dt = testDB.select("SELECT * from Person", null, typeof Person);
+    Person[] personBelow35 = dt.filter(isBellow35);
+    count = lengthof personBelow35;
+    id1 = personBelow35[0].id;
+    id2 = personBelow35[1].id;
     testDB.close();
     return;
 }
-function filterRow(ResultPrimitive p) (boolean){
-    return p.INT_TYPE >=  0;
+
+
+function testFilterTableWithCount () (int count) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person", null, typeof Person);
+    count = dt.filter(isBellow35).count();
+    testDB.close();
+    return;
+}
+
+
+function testMapTable () (string[] names) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    names = dt.map(getName);
+    testDB.close();
+    return;
+}
+
+
+function testMapWithFilterTable () (string[] names) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    names = dt.map(getName).filter(isGeraterThan4String);
+    testDB.close();
+    return;
+}
+
+function testFilterWithMapTable () (string[] names) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    names = dt.filter(isGeraterThan4).map(getName);
+    testDB.close();
+    return;
+}
+
+function testFilterWithMapAndCountTable () (int count) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    count = dt.filter(isGeraterThan4).map(getName).count();
+    testDB.close();
+    return;
+}
+
+
+function testAverageWithTable () (float avgSal) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    avgSal = dt.map(getSalary).average();
+    testDB.close();
+    return;
+}
+
+function testMinWithTable () (float avgSal) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    avgSal = dt.map(getSalary).min();
+    testDB.close();
+    return;
+}
+
+function testMaxWithTable () (float avgSal) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    avgSal = dt.map(getSalary).max();
+    testDB.close();
+    return;
+}
+
+function testSumWithTable () (float avgSal) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table<Person> dt = testDB.select("SELECT * from Person order by id", null, typeof Person);
+    avgSal = dt.map(getSalary).sum();
+    testDB.close();
+    return;
+}
+
+function testCloseConnectionPool () (int count) {
+    endpoint<sql:ClientConnector> testDB {
+        create sql:ClientConnector(sql:DB.HSQLDB_FILE, "./target/tempdb/",
+                                   0, "TEST_DATA_TABLE__ITR_DB", "SA", "", {maximumPoolSize:1});
+    }
+    table dt = testDB.select ("SELECT COUNT(*) as countVal FROM INFORMATION_SCHEMA.SYSTEM_SESSIONS", null,
+                              typeof ResultCount);
+    while (dt.hasNext()) {
+        var rs, _ = (ResultCount) dt.getNext();
+        count = rs.COUNTVAL;
+    }
+    testDB.close();
+    return;
+}
+
+function isBellow35(Person p)(boolean){
+    return p.age < 35;
+}
+
+function getName(Person p)(string s){
+    return p.name;
+}
+
+function getSalary(Person p)(float f){
+    return p.salary;
+}
+
+function isGeraterThan4(Person p) (boolean) {
+    return lengthof p.name > 4;
+}
+
+function isGeraterThan4String(string s) (boolean) {
+    return lengthof s > 4;
 }

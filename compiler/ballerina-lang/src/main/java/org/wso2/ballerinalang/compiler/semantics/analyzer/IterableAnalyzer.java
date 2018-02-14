@@ -32,7 +32,6 @@ import org.wso2.ballerinalang.compiler.semantics.model.types.BTupleCollectionTyp
 import org.wso2.ballerinalang.compiler.semantics.model.types.BType;
 import org.wso2.ballerinalang.compiler.semantics.model.types.BXMLType;
 import org.wso2.ballerinalang.compiler.tree.expressions.BLangInvocation;
-import org.wso2.ballerinalang.compiler.tree.expressions.BLangSimpleVarRef;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 import org.wso2.ballerinalang.compiler.util.TypeTags;
 import org.wso2.ballerinalang.compiler.util.diagnotic.DiagnosticLog;
@@ -206,19 +205,7 @@ public class IterableAnalyzer {
             return;
         }
         if (operation.kind == IterableKind.FILTER) {
-            BType type;
-            if (operation.iExpr.expr instanceof BLangInvocation) {
-                type = ((BLangInvocation) operation.iExpr.expr).type;
-            } else {
-                type = ((BLangSimpleVarRef) operation.iExpr.expr).type;
-            }
-            if (type.tag == TypeTags.TABLE) {
-                BTableType tableType = (BTableType) type;
-                operation.resultTypes = Lists
-                        .of(new BTableType(TypeTags.TABLE, tableType.getConstraint(), tableType.tsymbol));
-            } else {
-                operation.resultTypes = Lists.of(new BTupleCollectionType(argTypes));
-            }
+            operation.resultTypes = Lists.of(new BTupleCollectionType(argTypes));
             return;
         }
         operation.resultTypes = Lists.of(new BTupleCollectionType(supportedRetTypes));

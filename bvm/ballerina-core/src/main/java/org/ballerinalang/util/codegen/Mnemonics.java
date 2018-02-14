@@ -99,6 +99,7 @@ public class Mnemonics {
         mnemonics[InstructionCodes.MAPLOAD] = "mapload";
         mnemonics[InstructionCodes.MAPSTORE] = "mapstore";
         mnemonics[InstructionCodes.JSONLOAD] = "jsonload";
+        mnemonics[InstructionCodes.ENUMERATORLOAD] = "enumeratorload";
         mnemonics[InstructionCodes.JSONSTORE] = "jsonstore";
 
         mnemonics[InstructionCodes.IADD] = "iadd";
