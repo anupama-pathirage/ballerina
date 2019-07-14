@@ -18,7 +18,7 @@ import ballerina/io;
 import ballerina/log;
 import ballerina/socket;
 
-service timeoutServer on new socket:Listener(61599, config = {readTimeout: 20000}) {
+service timeoutServer on new socket:Listener(61599, {readTimeout: 20000}) {
 
     resource function onConnect(socket:Caller caller) {
         log:printInfo("Join: " + caller.remotePort);
@@ -35,12 +35,11 @@ service timeoutServer on new socket:Listener(61599, config = {readTimeout: 20000
                 log:printInfo("Client close: " + caller.remotePort);
             }
         } else {
-            error resultError = result;
-            io:println(resultError.detail().message);
+            io:println(result.detail().message);
         }
     }
 
     resource function onError(socket:Caller caller, error er) {
-        log:printError("Error on timeout server", err = <error> er);
+        log:printError("Error on timeout server", er);
     }
 }
