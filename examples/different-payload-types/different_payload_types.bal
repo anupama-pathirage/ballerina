@@ -47,7 +47,7 @@ service actionService on new http:Listener(9090) {
 
         if (bChannel is io:ReadableByteChannel) {
             //POST remote function with byte channel as payload. Since the file path is static
-            //`untaint` is used to denote that the byte channel is trusted .
+            //`<@untainted>` is used to denote that the byte channel is trusted .
             response = clientEP->post("/image", <@untainted> bChannel);
             handleResponse(response);
 
