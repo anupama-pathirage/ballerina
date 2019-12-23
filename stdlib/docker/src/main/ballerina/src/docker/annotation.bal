@@ -74,7 +74,6 @@ public type FileConfigs record {|
 public const annotation FileConfigs CopyFiles on source service, source listener;
 
 # Expose ports for docker.
-public type ExposeConfig record {| |};
 
 # @docker:Expose annotation to expose ballerina ports.
 public const annotation ExposeConfig Expose on source listener;
