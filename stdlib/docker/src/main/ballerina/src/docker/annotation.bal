@@ -57,11 +57,7 @@ public const annotation DockerConfiguration Config on source service, source lis
 # + sourceFile - Source path of the file (in your machine).
 # + target - Target path (inside container).
 # + isBallerinaConf - Flag to specify ballerina config file. When true, the config is passed as a command argument to the Dockerfile CMD.
-public type FileConfig record {|
-    string sourceFile;
-    string target;
-    boolean isBallerinaConf = false;
-|};
+
 
 # External File configurations for docker.
 #
