@@ -86,6 +86,20 @@ public class CallTest {
     }
 
     @Test(groups = CALL_TEST)
+    public void testCallWithStringTypesInParams() {
+        BValue[] returns = BRunUtil.invoke(result, "testCallWithStringTypesInParams", args);
+        Assert.assertEquals(returns[0].stringValue(), "test1");
+        Assert.assertEquals(returns[1].stringValue(), "test2     ");
+        Assert.assertEquals(returns[2].stringValue(), "c");
+        Assert.assertEquals(returns[3].stringValue(), "test3     ");
+        Assert.assertEquals(returns[4].stringValue(), "d");
+        Assert.assertEquals(returns[5].stringValue(), "test4");
+        Assert.assertEquals(returns[6].stringValue(), "test5");
+        Assert.assertEquals(returns[7].stringValue(), "hello ballerina code");
+        Assert.assertNull(returns[8]);
+    }
+
+    @Test(groups = CALL_TEST)
     public void testCallWithStringTypesReturnsData() {
         BValue[] returns = BRunUtil.invoke(result, "testCallWithStringTypesReturnsData", args);
         Assert.assertEquals(((BInteger) returns[0]).intValue(), 1);
